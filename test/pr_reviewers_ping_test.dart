@@ -1,4 +1,4 @@
-import 'package:pr_reviewers_ping/pr_reviewers_ping.dart';
+import 'package:pr_reviewers_ping/pinger.dart';
 
 void main() {
 

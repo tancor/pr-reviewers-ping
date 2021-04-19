@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'pr_reviewers_ping.dart';
+part of 'entities.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
