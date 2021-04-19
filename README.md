@@ -1,5 +1,5 @@
 <h3> pr-reviewers-ping </h3>
-A dart util to ping pull request reviewers and authors of pull requests with failed checks in slack.
+A dart util to mention GitHub pull request reviewers and authors of pull requests with failed checks in slack.
 
 
 <h4>Usage:</h4>
