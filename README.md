@@ -1,4 +1,4 @@
-1) Install [Dart]https://dart.dev/get-dart or [Flutter]https://flutter.dev/docs/get-started/install on your computer.
+1) Install [Dart](https://dart.dev/get-dart) or [Flutter](https://flutter.dev/docs/get-started/install) on your computer.
 2) Clone the repo.
 3) Create `pr_reviewers_ping_config.json` at the repo root directory with the following fields:
 ```
