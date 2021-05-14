@@ -73,6 +73,9 @@ class Pinger {
   Future<Configuration> _fetchConfig() async {
     final configFile = File(Directory.current.path + Platform.pathSeparator + 'pr_reviewers_ping_config.json');
     final configString = await configFile.readAsString();
+    print("Config path:\n${Directory.current.path + Platform.pathSeparator + 'pr_reviewers_ping_config.json'}");
+    print("Config:\n$configString");
+    print("------------------------");
 
     final configJson = json.decode(configString) as Map<String, dynamic>;
     return Configuration.fromJson(configJson);
