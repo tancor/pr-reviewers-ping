@@ -51,11 +51,11 @@ class Pinger {
 
     print('$slackPayload');
 
-    // final body = json.encode({'text': '$slackPayload'});
-    // await http.post(
-    //   configuration.slackWebhookUrl,
-    //   body: body,
-    // );
+    final body = json.encode({'text': '$slackPayload'});
+    await http.post(
+      configuration.slackWebhookUrl,
+      body: body,
+    );
   }
 
   String _slackUsersAndPullRequestsString(
