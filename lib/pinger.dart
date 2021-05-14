@@ -74,8 +74,6 @@ class Pinger {
     final configFile = File(Directory.current.path + Platform.pathSeparator + 'pr_reviewers_ping_config.json');
     final configString = await configFile.readAsString();
     print("Config path:\n${Directory.current.path + Platform.pathSeparator + 'pr_reviewers_ping_config.json'}");
-    print("Config:\n$configString");
-    print("------------------------");
 
     final configJson = json.decode(configString) as Map<String, dynamic>;
     return Configuration.fromJson(configJson);
@@ -86,7 +84,8 @@ class Pinger {
       configuration.pullRequestsUrl,
       headers: configuration.authorizationHeaders,
     );
-
+    print("Pull requests: $response");
+      
     final prsJsonList = (json.decode(response.body) as List).cast<Map<String, dynamic>>();
     return List<Pr>.from(prsJsonList.map<Pr>((json) => Pr.fromJson(json)));
   }
@@ -96,7 +95,8 @@ class Pinger {
       pr.statusesUrl,
       headers: configuration.authorizationHeaders,
     );
-
+    print("Statuses: $statusesResponse");
+    
     final statusesJsonList = (json.decode(statusesResponse.body) as List).cast<Map<String, dynamic>>();
     final statuses = List<PrStatus>.from(statusesJsonList.map<PrStatus>((e) => PrStatus.fromJson(e)));
 
