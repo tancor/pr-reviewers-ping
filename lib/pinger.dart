@@ -22,7 +22,7 @@ class Pinger {
 
       final lastStatus = await _fetchLastPrStatus(pr, configuration: configuration);
 
-      if (lastStatus.state == 'error') {
+      if (lastStatus?.state == 'error') {
         final urls = failedChecksPrAuthorsToPing[pr.author.login] ?? [];
         urls.add(pr.urlForSlack);
         failedChecksPrAuthorsToPing[pr.author.login] = urls;
@@ -84,7 +84,6 @@ class Pinger {
       configuration.pullRequestsUrl,
       headers: configuration.authorizationHeaders,
     );
-    print("Pull requests: $response");
       
     final prsJsonList = (json.decode(response.body) as List).cast<Map<String, dynamic>>();
     return List<Pr>.from(prsJsonList.map<Pr>((json) => Pr.fromJson(json)));
@@ -95,11 +94,10 @@ class Pinger {
       pr.statusesUrl,
       headers: configuration.authorizationHeaders,
     );
-    print("Statuses: $statusesResponse");
     
     final statusesJsonList = (json.decode(statusesResponse.body) as List).cast<Map<String, dynamic>>();
     final statuses = List<PrStatus>.from(statusesJsonList.map<PrStatus>((e) => PrStatus.fromJson(e)));
 
-    return statuses.first;
+    return statuses?.isNotEmpty == true ? statuses.first : null;
   } 
 }
