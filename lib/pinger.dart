@@ -47,7 +47,11 @@ class Pinger {
       slackPayload += '\n Checks failed ❌:\n${failedAuthorsString}';
     }
 
-    slackPayload += '\n';
+    if (slackPayload.isNotEmpty) {
+      slackPayload += '\n';
+    } else {
+      slackPayload = 'No PRs found. Time to eat some 🍩';
+    }
 
     print('$slackPayload');
 
