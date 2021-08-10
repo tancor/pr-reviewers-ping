@@ -1,8 +1,18 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:pr_reviewers_ping/entities.dart';
+
+const _foodEmojis = <String>[
+  '🍩',
+  '🌮',
+  '🥙',
+  '🌯',
+];
+
+final _random = Random();
 
 class Pinger {
   void pingPullRequestReviewers() async {
@@ -50,7 +60,7 @@ class Pinger {
     if (slackPayload.isNotEmpty) {
       slackPayload += '\n';
     } else {
-      slackPayload = 'No PRs found. Time to eat some 🍩';
+      slackPayload = 'No PRs found. Time to eat some ${_pickRandomFoodEmoji()}';
     }
 
     print('$slackPayload');
@@ -103,5 +113,7 @@ class Pinger {
     final statuses = List<PrStatus>.from(statusesJsonList.map<PrStatus>((e) => PrStatus.fromJson(e)));
 
     return statuses?.isNotEmpty == true ? statuses.first : null;
-  } 
+  }
+
+  String _pickRandomFoodEmoji() => _foodEmojis[_random.nextInt(_foodEmojis.length)];
 }
