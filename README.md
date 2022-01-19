@@ -17,5 +17,5 @@ A dart util to mention GitHub pull request reviewers and authors of pull request
 }
 ```
 
-4) run `dart bin/pr_reviewers_ping.dart` from the root directory.
+4) run `dart bin/pr_reviewers_ping.dart [--skip_no_prs_message]` from the root directory.
 

@@ -15,7 +15,7 @@ const _foodEmojis = <String>[
 final _random = Random();
 
 class Pinger {
-  void pingPullRequestReviewers() async {
+  void pingPullRequestReviewers({bool skipNoPrsMessage}) async {
     final configuration = await _fetchConfig();
 
     final prs = await _fetchPullRequests(configuration);
@@ -59,8 +59,16 @@ class Pinger {
 
     if (slackPayload.isNotEmpty) {
       slackPayload += '\n';
-    } else {
+    } else if (!skipNoPrsMessage) {
       slackPayload = 'No PRs found. Time to eat some ${_pickRandomFoodEmoji()}';
+    } else {
+      slackPayload = '';
+    }
+
+    if (slackPayload.isEmpty) {
+      print('Nothing to send to slack');
+
+      return;
     }
 
     print('$slackPayload');
