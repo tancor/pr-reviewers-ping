@@ -15,7 +15,15 @@ const _foodEmojis = <String>[
 final _random = Random();
 
 class Pinger {
-  void pingPullRequestReviewers({bool skipNoPrsMessage}) async {
+  Pinger({
+    required this.token,
+  });
+
+  final String token;
+
+  void pingPullRequestReviewers({
+    required bool skipNoPrsMessage,
+  }) async {
     final configuration = await _fetchConfig();
 
     final prs = await _fetchPullRequests(configuration);
@@ -30,7 +38,7 @@ class Pinger {
         continue;
       }
 
-      final lastStatus = await _fetchLastPrStatus(pr, configuration: configuration);
+      final lastStatus = await _fetchLastPrStatus(pr);
 
       if (lastStatus?.state == 'error') {
         final urls = failedChecksPrAuthorsToPing[pr.author.login] ?? [];
@@ -39,12 +47,12 @@ class Pinger {
         continue;
       }
 
-      pr.requestedReviewers.forEach((reviewer) {
+      for (final reviewer in pr.requestedReviewers) {
         final urls = reviewersToPing[reviewer.login] ?? [];
 
         urls.add(pr.urlForSlack);
         reviewersToPing[reviewer.login] = urls;
-      });
+      }
     }
 
     var slackPayload = _slackUsersAndPullRequestsString(reviewersToPing, configuration: configuration);
@@ -54,7 +62,7 @@ class Pinger {
         failedChecksPrAuthorsToPing,
         configuration: configuration,
       );
-      slackPayload += '\n Checks failed ❌:\n${failedAuthorsString}';
+      slackPayload += '\n Checks failed ❌:\n$failedAuthorsString';
     }
 
     if (slackPayload.isNotEmpty) {
@@ -71,23 +79,24 @@ class Pinger {
       return;
     }
 
-    print('$slackPayload');
+    print(slackPayload);
 
-    final body = json.encode({'text': '$slackPayload'});
+    final body = json.encode({'text': slackPayload});
     await http.post(
-      configuration.slackWebhookUrl,
+      Uri.parse(configuration.slackWebhookUrl),
       body: body,
     );
   }
 
   String _slackUsersAndPullRequestsString(
-      Map<String, List<String>> usersAndUrls, {
-        Configuration configuration,
-      }) =>
+    Map<String, List<String>> usersAndUrls, {
+    required Configuration configuration,
+  }) =>
       usersAndUrls.keys.fold('', (previousValue, element) {
         final userGithubName = element;
         final userSlackName = configuration.githubToSlackUsersMap[userGithubName];
-        previousValue += "${userSlackName?.isNotEmpty == true ? "<@$userSlackName>" : userGithubName}:\n${usersAndUrls[userGithubName].join("\n")}\n";
+        previousValue +=
+            "${userSlackName?.isNotEmpty == true ? "<@$userSlackName>" : userGithubName}:\n${usersAndUrls[userGithubName]!.join("\n")}\n";
 
         return previousValue;
       });
@@ -104,24 +113,28 @@ class Pinger {
   Future<List<Pr>> _fetchPullRequests(Configuration configuration) async {
     final response = await http.get(
       configuration.pullRequestsUrl,
-      headers: configuration.authorizationHeaders,
+      headers: _authorizationHeaders,
     );
-      
+
     final prsJsonList = (json.decode(response.body) as List).cast<Map<String, dynamic>>();
     return List<Pr>.from(prsJsonList.map<Pr>((json) => Pr.fromJson(json)));
   }
 
-  Future<PrStatus> _fetchLastPrStatus(Pr pr, {Configuration configuration}) async {
+  Future<PrStatus?> _fetchLastPrStatus(Pr pr) async {
     final statusesResponse = await http.get(
-      pr.statusesUrl,
-      headers: configuration.authorizationHeaders,
+      Uri.parse(pr.statusesUrl),
+      headers: _authorizationHeaders,
     );
-    
+
     final statusesJsonList = (json.decode(statusesResponse.body) as List).cast<Map<String, dynamic>>();
     final statuses = List<PrStatus>.from(statusesJsonList.map<PrStatus>((e) => PrStatus.fromJson(e)));
 
-    return statuses?.isNotEmpty == true ? statuses.first : null;
+    return statuses.isNotEmpty == true ? statuses.first : null;
   }
+
+  Map<String, String> get _authorizationHeaders => {
+        'Authorization': 'token $token',
+      };
 
   String _pickRandomFoodEmoji() => _foodEmojis[_random.nextInt(_foodEmojis.length)];
 }
