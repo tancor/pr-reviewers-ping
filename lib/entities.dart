@@ -6,11 +6,15 @@ part 'entities.g.dart';
 class Configuration {
   final String repoOwner;
   final String projectName;
-  final String githubPat;
   final Map<String, String> githubToSlackUsersMap;
   final String slackWebhookUrl;
 
-  Configuration({this.repoOwner, this.projectName, this.githubPat, this.githubToSlackUsersMap, this.slackWebhookUrl});
+  Configuration({
+    required this.repoOwner,
+    required this.projectName,
+    required this.githubToSlackUsersMap,
+    required this.slackWebhookUrl,
+  });
 
   factory Configuration.fromJson(Map<String, dynamic> json) => _$ConfigurationFromJson(json);
 }
@@ -19,7 +23,9 @@ class Configuration {
 class PrStatus {
   final String state;
 
-  PrStatus({this.state});
+  PrStatus({
+    required this.state,
+  });
 
   factory PrStatus.fromJson(Map<String, dynamic> json) => _$PrStatusFromJson(json);
 }
@@ -28,7 +34,9 @@ class PrStatus {
 class User {
   final String login;
 
-  User({this.login});
+  User({
+    required this.login,
+  });
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
 }
@@ -37,7 +45,9 @@ class User {
 class Label {
   final String name;
 
-  Label({this.name});
+  Label({
+    required this.name,
+  });
 
   factory Label.fromJson(Map<String, dynamic> json) => _$LabelFromJson(json);
 }
@@ -56,18 +66,23 @@ class Pr {
   @JsonKey(name: 'statuses_url')
   final String statusesUrl;
 
-  Pr({this.htmlUrl, this.requestedReviewers, this.labels, this.title, this.draft, this.statusesUrl, this.author});
+  Pr({
+    required this.htmlUrl,
+    required this.requestedReviewers,
+    required this.labels,
+    required this.title,
+    required this.draft,
+    required this.statusesUrl,
+    required this.author,
+  });
 
   factory Pr.fromJson(Map<String, dynamic> json) => _$PrFromJson(json);
 }
 
 extension ConfigurationHelpers on Configuration {
-  String get pullRequestsUrl => 'https://api.github.com/repos/${repoOwner}/${projectName}/pulls';
-  Map<String, String> get authorizationHeaders => {
-    'Authorization': 'token ${githubPat}',
-  };
+  Uri get pullRequestsUrl => Uri.parse('https://api.github.com/repos/$repoOwner/$projectName/pulls');
 }
 
 extension PrHelpers on Pr {
-  String get urlForSlack => '<${htmlUrl}|${title}>';
+  String get urlForSlack => '<$htmlUrl|$title>';
 }
